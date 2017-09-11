@@ -1,0 +1,13 @@
+nav {
+    width: 100%;
+    height: 1.5rem;
+    border-top: 1px solid cadetblue;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: #fff;
+    display: flex;
+    .tabs {
+      flex: 1;
+    }
+  }
