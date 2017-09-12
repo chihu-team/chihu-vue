@@ -1,4 +1,5 @@
 <template>
+<VuePullRefresh :on-refresh="onRefresh">
     <section class="home-view">
         <section class="search-bar">
             <div class="search">
@@ -10,43 +11,60 @@
             </div>
         </section>
         <section class="content">
-            <work 
-                v-for="idata in data"
-                v-bind:data="idata"
-                v-bind:key="idata.id">
+            <work v-for="idata in data" v-bind:data="idata" v-bind:key="idata.id">
             </work>
         </section>
+        <infinite-loading :on-infinite="onInfinite" ref="infiniteLoading"></infinite-loading>
     </section>
+</VuePullRefresh>
 </template>
 
 
 
 <script>
 import work from '../components/work'
+import qs from 'qs'
+import InfiniteLoading from 'vue-infinite-loading';
+import VuePullRefresh from 'vue-pull-refresh';
+
 
 export default {
     name: 'home-view',
-    components: { work },
+    components: { work, InfiniteLoading, VuePullRefresh },
     data() {
         return {
-           data:[]
+            data: []
         }
     },
     created: function() {
-        
-        this.getData();
+        //this.getData();
     },
     methods: {
-        getData() {
-            this.$http.post('https://www.devonhello.com/chihu2/home',
-            { 'len': 0 }).then(response => {
-
-                // get body data
-               console.log(response.body);
-                this.data = response.body;
-            }, response => {
-                // error callback
+        onRefresh: function() {
+            return new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                    resolve();
+                }, 1000);
             });
+        },
+        onInfinite() {
+            this.getData();
+            //this.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded');
+        },
+        getData() {
+            this.$http.post(
+                'https://www.devonhello.com/chihu2/home',
+                qs.stringify({ 'len': this.data.length })
+                )
+                .then(response => {
+
+                    // get body data
+                    console.log(response.data);
+                    this.data = this.data.concat(response.data);
+                    this.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded');
+                }, response => {
+                    // error callback
+                });
         }
     }
 }
@@ -82,7 +100,8 @@ export default {
         }
     }
     .content {
-        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+        padding-bottom: 1.5rem;
     }
 }
 </style>

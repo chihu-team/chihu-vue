@@ -43,6 +43,7 @@
 <script>
 import food from '../components/food'
 import step from '../components/step'
+import qs from 'qs'
 
 export default {
   name: 'work-view',
@@ -58,15 +59,17 @@ export default {
   },
   methods: {
     getData() {
-      this.$http.post('https://www.devonhello.com/chihu2/article_dec',
-        { 'id': this.$route.params.id }).then(response => {
-
-          // get body data
-          console.log(response.body);
-          this.data = response.body[0];
-        }, response => {
-          // error callback
-        });
+      this.$http.post(
+                'https://www.devonhello.com/chihu2/article_dec',
+                  qs.stringify({ 'id': this.$route.params.id })
+                )
+                .then(response => {
+                    // get body data
+                    console.log(response.data);
+                    this.data = response.data[0];
+                }, response => {
+                    // error callback
+                });
     }
   }
 }
